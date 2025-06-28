@@ -161,7 +161,7 @@ namespace TransitTube_Overlay_Mod
 
 
     /**
-     * I don't remember what it does but it won't shut up in the logs overwise :)
+     * Updates the bitfieldMap to allow StatusItems to display on our overlay only
      */
     [HarmonyPatch(typeof(StatusItem), nameof(StatusItem.GetStatusItemOverlayBySimViewMode))]
     public static class StatusItem_GetStatusItemOverlayBySimViewMode_Patch
