@@ -46,7 +46,7 @@ namespace TransitTube_Overlay_Mod
 
         public override void Disable()
         {
-            ResetDisplayValues(layerTargets);
+            ResetDisplayValues(partition.GetAllItems());
             Camera.main.cullingMask &= ~cameraLayerMask;
             SelectTool.Instance.ClearLayerMask();
 
@@ -82,15 +82,7 @@ namespace TransitTube_Overlay_Mod
             Vector2I min, max;
             Grid.GetVisibleExtents(out min, out max);
 
-            RemoveOffscreenTargets(layerTargets, min, max, root =>
-            {
-                if (root != null)
-                {
-                    Vector3 pos = root.transform.GetPosition();
-                    pos.z = GetDefaultDepth(root);
-                    root.transform.SetPosition(pos);
-                }
-            });
+            RemoveOffscreenTargets(layerTargets, min, max);
 
             foreach (SaveLoadRoot root in partition.GetAllIntersecting(min, max))
             {

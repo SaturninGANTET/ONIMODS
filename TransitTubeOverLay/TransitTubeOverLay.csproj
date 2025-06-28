@@ -11,13 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Assembly-CSharp" HintPath="$(GameFolder)/Assembly-CSharp.dll" Private="false"/>
-    <Reference Include="UnityEngine" HintPath="$(GameFolder)/UnityEngine.dll" Private="false"/>
-    <Reference Include="Assembly-CSharp-firstpass" HintPath="$(GameFolder)/Assembly-CSharp-firstpass.dll" Private="false"/>
-    <Reference Include="UnityEngine.CoreModule" HintPath="$(GameFolder)/UnityEngine.CoreModule.dll" Private="false"/>
+    <Reference Include="Assembly-CSharp" HintPath="$(GameFolder)/Assembly-CSharp.dll" Private="false" />
+    <Reference Include="UnityEngine" HintPath="$(GameFolder)/UnityEngine.dll" Private="false" />
+    <Reference Include="Assembly-CSharp-firstpass" HintPath="$(GameFolder)/Assembly-CSharp-firstpass.dll" Private="false" />
+    <Reference Include="UnityEngine.CoreModule" HintPath="$(GameFolder)/UnityEngine.CoreModule.dll" Private="false" />
     <Reference Include="UnityEngine.UI" HintPath="$(GameFolder)/UnityEngine.UI.dll" Private="false" />
-    <Reference Include="UnityEngine.ImageConversionModule" HintPath="$(GameFolder)/UnityEngine.ImageConversionModule.dll" Private="false"/>
-    <Reference Include="0Harmony" HintPath="$(GameFolder)/0Harmony.dll" Private="false"/>
+    <Reference Include="UnityEngine.ImageConversionModule" HintPath="$(GameFolder)/UnityEngine.ImageConversionModule.dll" Private="false" />
+    <Reference Include="0Harmony" HintPath="$(GameFolder)/0Harmony.dll" Private="false" />
   </ItemGroup>
   
   <ItemGroup>

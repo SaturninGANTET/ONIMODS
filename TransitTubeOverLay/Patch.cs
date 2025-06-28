@@ -14,7 +14,6 @@ namespace TransitTube_Overlay_Mod
         {
             public static void Postfix()
             {
-                //load custom image -- maybe hook assets/OnprefabInit directly ?
                 Util.RegisterEmbeddedIcon(
                     Constants.RessourceName.TransitTubeOverlayToggle,
                     Constants.AssetsName.TransitTubeOverlayToggle
