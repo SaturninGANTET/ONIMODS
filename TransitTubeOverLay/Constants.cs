@@ -3,6 +3,7 @@
     public static class Constants
     {
         public const int statusItemOverlayBit = 0x00080000;
+        public const BuildLocationRule transitTube = (BuildLocationRule)543; 
         
         public static class RessourceName
         {
@@ -15,6 +16,18 @@
             public const string TransitTubeOverlayToggle = "mod_overlay_transit_tube";
             public const string TransitTubeInput = "mod_transit_tube_input";
             public const string TransitTubeOutput = "mod_transit_tube_output";
+        }
+
+        public static class FILTERLAYERS
+        {
+            public const string TRAVELTUBE = "TRAVELTUBES";
+        }
+
+        public static class BuildLocationRules
+        {
+            public const BuildLocationRule transitTube = (BuildLocationRule)543;
+            public const BuildLocationRule transitTubeEntrance = (BuildLocationRule)544;
+            public const BuildLocationRule transitTubeBridge = (BuildLocationRule)545;
         }
     }
 }
