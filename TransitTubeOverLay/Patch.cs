@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Database;
 using HarmonyLib;
+using UnityEngine;
 
 namespace TransitTube_Overlay_Mod
 {
@@ -234,6 +235,30 @@ namespace TransitTube_Overlay_Mod
                 __instance.NoTubeConnected.status_overlays |= Constants.statusItemOverlayBit;
                 __instance.NoTubeExits.status_overlays |= Constants.statusItemOverlayBit;
                 __instance.TransitTubeEntranceWaxReady.status_overlays |= Constants.statusItemOverlayBit;
+                __instance.Broken.status_overlays |= Constants.statusItemOverlayBit;
+                __instance.PendingDeconstruction.status_overlays |= Constants.statusItemOverlayBit;
+                __instance.PendingDemolition.status_overlays |= Constants.statusItemOverlayBit;
+            }
+        }
+
+        [HarmonyPatch(typeof(BuildingStatusItems), "ShowInUtilityOverlay")]
+        public static class BuildingStatusItems_ShowInUtilityOverlay_Patch
+        {
+            [HarmonyPostfix]
+            public static void Postfix(
+                HashedString mode,
+                object data,
+                BuildingStatusItems __instance,
+                ref bool __result
+                )
+            {
+                if (__result) return;
+                if (mode == TransitTubeOverlay.ID)
+                {
+                    Tag prefabTag = ((Transform)data).GetComponent<KPrefabID>().PrefabTag;
+                    __result = TransitTubeOverlay.TargetIDs.Contains(prefabTag);
+                }
+                return;
             }
         }
     }
