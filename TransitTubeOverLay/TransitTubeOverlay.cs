@@ -7,9 +7,30 @@ namespace TransitTube_Overlay_Mod
 {
     public class TransitTubeOverlay : OverlayModes.Mode
     {
+        private static ICollection<Tag> _targetIDs;
+        public static ICollection<Tag> TargetIDs
+        {
+            get
+            {
+                if(_targetIDs == null)
+                {
+                    _targetIDs = new List<Tag>() { "TravelTube", "TravelTubeEntrance", "TravelTubeWallBridge" };
+
+                    if (AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "TravelTubesExpanded"))
+                    {
+                        // Travel Tubes Expanded Mod Installed - https://github.com/SanchozzDeponianin/ONIMods/tree/master/src/TravelTubesExpanded
+                        _targetIDs.Add(new Tag("TravelTubeBunkerWallBridge"));
+                        _targetIDs.Add(new Tag("TravelTubeFirePoleBridge"));
+                        _targetIDs.Add(new Tag("TravelTubeInsulatedWallBridge"));
+                        _targetIDs.Add(new Tag("TravelTubeLadderBridge"));
+                    }
+                }
+                return _targetIDs;
+            }
+        }
+
         private UniformGrid<SaveLoadRoot> partition;
         private HashSet<SaveLoadRoot> layerTargets = new HashSet<SaveLoadRoot>();
-        private ICollection<Tag> targetIDs;
         private int overlayLayer;
         private int cameraLayerMask;
 
@@ -18,16 +39,6 @@ namespace TransitTube_Overlay_Mod
 
         public TransitTubeOverlay()
         {
-            this.targetIDs = new List<Tag>(){"TravelTube", "TravelTubeEntrance", "TravelTubeWallBridge" };
-            if (AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "TravelTubesExpanded"))
-            {
-                //Travel Tubes Expanded Mod Installed - https://github.com/SanchozzDeponianin/ONIMods/tree/master/src/TravelTubesExpanded
-                this.targetIDs.Add(new Tag("TravelTubeBunkerWallBridge"));
-                this.targetIDs.Add(new Tag("TravelTubeFirePoleBridge"));
-                this.targetIDs.Add(new Tag("TravelTubeInsulatedWallBridge"));
-                this.targetIDs.Add(new Tag("TravelTubeLadderBridge"));
-            }
-
             this.overlayLayer = LayerMask.NameToLayer("MaskedOverlay");
             this.cameraLayerMask = LayerMask.GetMask("MaskedOverlay");
         }
@@ -35,7 +46,7 @@ namespace TransitTube_Overlay_Mod
         public override void Enable()
         {
             RegisterSaveLoadListeners();
-            partition = PopulatePartition<SaveLoadRoot>(targetIDs);
+            partition = PopulatePartition<SaveLoadRoot>(TargetIDs);
 
             Camera.main.cullingMask |= cameraLayerMask;
             SelectTool.Instance.SetLayerMask(cameraLayerMask);
@@ -64,7 +75,7 @@ namespace TransitTube_Overlay_Mod
 
         protected override void OnSaveLoadRootRegistered(SaveLoadRoot item)
         {
-            if (targetIDs.Contains(item.GetComponent<KPrefabID>().GetSaveLoadTag()))
+            if (TargetIDs.Contains(item.GetComponent<KPrefabID>().GetSaveLoadTag()))
                 partition.Add(item);
         }
 
