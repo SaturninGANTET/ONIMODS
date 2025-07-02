@@ -3,7 +3,6 @@
     public static class Constants
     {
         public const int statusItemOverlayBit = 0x00080000;
-        public const BuildLocationRule transitTube = (BuildLocationRule)543; 
         
         public static class RessourceName
         {
