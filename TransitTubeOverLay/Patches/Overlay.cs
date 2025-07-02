@@ -1,79 +1,64 @@
-﻿using System;
+﻿using Database;
+using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using Database;
-using HarmonyLib;
+using TransitTubeOverlay.Patches;
 using UnityEngine;
 
-namespace TransitTube_Overlay_Mod
+namespace TransitTubeOverlay.Patches
 {
-    public class Patches
+    public class OverlayPatches
     {
+        public static class BuildingConfig_CreateBuildingDef_Patch
+        {
+            /// <summary>
+            /// Applies the ViewMode patch to all travel tube building configs.
+            /// </summary>
+            public static void PatchAll(Harmony harmony)
+            {
+                BuildingDef_CreateBuildingDef_PatchHelper.PatchViewMode(harmony, typeof(TravelTubeConfig));
+                BuildingDef_CreateBuildingDef_PatchHelper.PatchViewMode(harmony, typeof(TravelTubeWallBridgeConfig));
+                BuildingDef_CreateBuildingDef_PatchHelper.PatchViewMode(harmony, typeof(TravelTubeEntranceConfig));
+            }
+        }
+
+        /*
+         * Registers assets used for the overlay
+         */
         [HarmonyPatch(typeof(Db), nameof(Db.Initialize))]
         public static class TransitTubeOverlayMod_AssetsInit
         {
+            [HarmonyPostfix]
             public static void Postfix()
             {
-                Util.RegisterEmbeddedIcon(
-                    Constants.RessourceName.TransitTubeOverlayToggle,
-                    Constants.AssetsName.TransitTubeOverlayToggle
+                Utils.RegisterEmbeddedIcon(
+                    CONSTANTS.RESSOURCESNAME.TransitTubeOverlayToggle,
+                    CONSTANTS.ASSETSNAME.TransitTubeOverlayToggle
                 );
-                Util.RegisterEmbeddedIcon(
-                    Constants.RessourceName.TransitTubeInput,
-                    Constants.AssetsName.TransitTubeInput
+                Utils.RegisterEmbeddedIcon(
+                    CONSTANTS.RESSOURCESNAME.TransitTubeInput,
+                    CONSTANTS.ASSETSNAME.TransitTubeInput
                 );
-                Util.RegisterEmbeddedIcon(
-                    Constants.RessourceName.TransitTubeOutput,
-                    Constants.AssetsName.TransitTubeOutput
+                Utils.RegisterEmbeddedIcon(
+                    CONSTANTS.RESSOURCESNAME.TransitTubeOutput,
+                    CONSTANTS.ASSETSNAME.TransitTubeOutput
                 );
             }
         }
 
-        /**
-         * Adds auto overlay toggle when selecting building to build.
-         */
-        [HarmonyPatch(typeof(TravelTubeConfig), nameof(TravelTubeConfig.CreateBuildingDef))]
-        public static class TravelTubeConfig_CreateBuildingDef_Patch
-        {
-            public static void Postfix(ref BuildingDef __result)
-            {
-                if (__result == null) return;
-                __result.ViewMode = TransitTubeOverlay.ID;
-            }
-        }
-        [HarmonyPatch(typeof(TravelTubeWallBridgeConfig), nameof(TravelTubeWallBridgeConfig.CreateBuildingDef))]
-        public static class TravelTubeWallBridgeConfig_CreateBuildingDef_Patch
-        {
-            public static void Postfix(ref BuildingDef __result)
-            {
-                if (__result == null) return;
-                __result.ViewMode = TransitTubeOverlay.ID;
-            }
-        }
-        [HarmonyPatch(typeof(TravelTubeEntranceConfig), nameof(TravelTubeEntranceConfig.CreateBuildingDef))]
-        public static class TravelTubeEntrance_CreateBuildingDef_Patch
-        {
-            public static void Postfix(ref BuildingDef __result)
-            {
-                if (__result == null) return;
-                __result.ViewMode = TransitTubeOverlay.ID;
-            }
-        }
 
-
-        /**
-         * Adds Transit Tube overlay button in overlayMenu
-         */
         [HarmonyPatch(typeof(OverlayMenu), "InitializeToggles")]
         public class InitalizeToggles_Patch
         {
-            public static void Postfix(List<KIconToggleMenu.ToggleInfo> ___overlayToggleInfos)
+            [HarmonyPostfix]
+            public static void AddTransitTubeOverlayToggleButton(List<KIconToggleMenu.ToggleInfo> ___overlayToggleInfos)
             {
                 Type overlayToggleInfoType = typeof(OverlayMenu).GetNestedType("OverlayToggleInfo", BindingFlags.NonPublic);
                 if (overlayToggleInfoType == null)
                 {
-                    Debug.LogError("[TransitTube_Overlay_Mod] Couldn't find class OverlayToggleInfo.");
+                    Debug.LogError("[TransitTubeOverlay] Couldn't find class OverlayToggleInfo.");
                     return;
                 }
 
@@ -91,13 +76,13 @@ namespace TransitTube_Overlay_Mod
 
                 object newToggle = ctor.Invoke(new object[]
                 {
-                    "Transit Tube Overlay",             // text
-                    "mod_overlay_transit_tube",             // icon_name
-                    TransitTubeOverlay.ID,              // sim_view
-                    "TravelTube",                       // required_tech_item
-                    Action.NumActions,                  // hotKey
-                    "Displays transit tube components", // tooltip
-                    "Transit Tube Overlay"              // tooltip_header
+                    "Transit Tube Overlay",                         // text
+                    CONSTANTS.ASSETSNAME.TransitTubeOverlayToggle,  // icon_name
+                    TransitTubeOverlay.ID,                          // sim_view
+                    "TravelTube",                                   // required_tech_item
+                    Action.NumActions,                              // hotKey
+                    "Displays transit tube components",             // tooltip
+                    "Transit Tube Overlay"                          // tooltip_header
                 });
 
                 if (newToggle is KIconToggleMenu.ToggleInfo toggleInfo)
@@ -106,15 +91,17 @@ namespace TransitTube_Overlay_Mod
                 }
                 else
                 {
-                    Debug.LogError("[TransitTube_Overlay_Mod] Couldn't cast to toggleInfo.");
+                    Debug.LogError("[TransitTubeOverlay] Couldn't cast to toggleInfo.");
                 }
             }
         }
 
+
         [HarmonyPatch(typeof(OverlayScreen), "RegisterModes")]
         public static class OverlayScreen_RegisterModes_Patch
         {
-            public static void Postfix(OverlayScreen __instance)
+            [HarmonyPostfix]
+            public static void RegisterTransitTubeOverlay(OverlayScreen __instance)
             {
                 var registerModeMethod = AccessTools.Method(typeof(OverlayScreen), "RegisterMode");
 
@@ -131,14 +118,14 @@ namespace TransitTube_Overlay_Mod
         }
 
 
-
-        /**
-         * Finds the real exits (no bridge)
+         /**
+         * Finds the real exits (no bridge) to mark them in overlay
          */
         [HarmonyPatch(typeof(TravelTube), "OnDirtyNavCellUpdated")]
         public static class TravelTube_OnDirtyNavCellUpdated_Patch
         {
-            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+            [HarmonyTranspiler]
+            public static IEnumerable<CodeInstruction> isRealExitUpdate(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
             {
                 LocalBuilder realExitFlag = generator.DeclareLocal(typeof(bool));
 
@@ -161,7 +148,7 @@ namespace TransitTube_Overlay_Mod
                     }
 
 
-                    //Set Flag
+                    //Set Flag when Transition Tube -> NoTube is available
                     if (
                         i >= 2 &&
                         codes[i - 2].opcode == OpCodes.Ldfld &&
@@ -175,7 +162,7 @@ namespace TransitTube_Overlay_Mod
                         yield return new CodeInstruction(OpCodes.Stloc_S, realExitFlag);
                     }
 
-                    //Update internal State
+                    //Update custom field
                     if (
                         codes[i].opcode == OpCodes.Call &&
                         codes[i].operand is MethodInfo method &&
@@ -190,16 +177,16 @@ namespace TransitTube_Overlay_Mod
             }
         }
 
-
         /**
-         * Updates the bitfieldMap to allow StatusItems to display on our overlay only
+         * Register which bit enable StatusItem display in our overlay
          */
         [HarmonyPatch(typeof(StatusItem), nameof(StatusItem.GetStatusItemOverlayBySimViewMode))]
         public static class StatusItem_GetStatusItemOverlayBySimViewMode_Patch
         {
             static bool patched = false;
 
-            public static void Prefix()
+            [HarmonyPrefix]
+            public static void RegisterBit()
             {
                 if (patched) return;
                 patched = true;
@@ -219,25 +206,25 @@ namespace TransitTube_Overlay_Mod
                 }
 
                 // Inject overlay mapping
-                dict[TransitTubeOverlay.ID] = (StatusItem.StatusItemOverlays)Constants.statusItemOverlayBit;
+                dict[TransitTubeOverlay.ID] = (StatusItem.StatusItemOverlays)CONSTANTS.statusItemOverlayBit;
             }
         }
 
         [HarmonyPatch(typeof(BuildingStatusItems), "CreateStatusItems")]
         public static class BuildingStatusItem_CreateStatusItems_Patch
         {
-            public static void Postfix(BuildingStatusItems __instance)
+            [HarmonyPostfix]
+            public static void EnableDisplayInTransitTubeOverlay(BuildingStatusItems __instance)
             {
-
                 __instance.NoTubeConnected.render_overlay = TransitTubeOverlay.ID;
                 __instance.NoTubeExits.render_overlay = TransitTubeOverlay.ID;
                 __instance.TransitTubeEntranceWaxReady.render_overlay = TransitTubeOverlay.ID;
-                __instance.NoTubeConnected.status_overlays |= Constants.statusItemOverlayBit;
-                __instance.NoTubeExits.status_overlays |= Constants.statusItemOverlayBit;
-                __instance.TransitTubeEntranceWaxReady.status_overlays |= Constants.statusItemOverlayBit;
-                __instance.Broken.status_overlays |= Constants.statusItemOverlayBit;
-                __instance.PendingDeconstruction.status_overlays |= Constants.statusItemOverlayBit;
-                __instance.PendingDemolition.status_overlays |= Constants.statusItemOverlayBit;
+                __instance.NoTubeConnected.status_overlays |= CONSTANTS.statusItemOverlayBit;
+                __instance.NoTubeExits.status_overlays |= CONSTANTS.statusItemOverlayBit;
+                __instance.TransitTubeEntranceWaxReady.status_overlays |= CONSTANTS.statusItemOverlayBit;
+                __instance.Broken.status_overlays |= CONSTANTS.statusItemOverlayBit;
+                __instance.PendingDeconstruction.status_overlays |= CONSTANTS.statusItemOverlayBit;
+                __instance.PendingDemolition.status_overlays |= CONSTANTS.statusItemOverlayBit;
             }
         }
 
@@ -245,7 +232,7 @@ namespace TransitTube_Overlay_Mod
         public static class BuildingStatusItems_ShowInUtilityOverlay_Patch
         {
             [HarmonyPostfix]
-            public static void Postfix(
+            public static void AddTransitTubeOverlayCheck(
                 HashedString mode,
                 object data,
                 BuildingStatusItems __instance,
