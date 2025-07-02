@@ -16,7 +16,7 @@ namespace TransitTube_Overlay_Mod
                 {
                     _targetIDs = new List<Tag>() { "TravelTube", "TravelTubeEntrance", "TravelTubeWallBridge" };
 
-                    if (AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "TravelTubesExpanded"))
+                    if (Util.isModLoaded(Constants.otherMods.TravelTubesExpanded))
                     {
                         // Travel Tubes Expanded Mod Installed - https://github.com/SanchozzDeponianin/ONIMods/tree/master/src/TravelTubesExpanded
                         _targetIDs.Add(new Tag("TravelTubeBunkerWallBridge"));
@@ -126,6 +126,7 @@ namespace TransitTube_Overlay_Mod
                 var transitTubeAcess = root.GetComponent<TravelTubeEntrance>();
                 if (transitTubeAcess != null)
                 {
+                    root.GetComponent<KBatchedAnimController>().TintColour = new Color32(0, 255, 255, 255);
                     var icon = transitTubeAcess.GetComponent<TubeOverlayIcon>();
                     if(icon == null)
                     {

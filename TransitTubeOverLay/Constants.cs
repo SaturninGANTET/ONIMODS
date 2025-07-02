@@ -29,5 +29,10 @@
             public const BuildLocationRule transitTubeEntrance = (BuildLocationRule)544;
             public const BuildLocationRule transitTubeBridge = (BuildLocationRule)545;
         }
+
+        public static class otherMods
+        {
+            public const string TravelTubesExpanded = "TravelTubesExpanded";
+        }
     }
 }

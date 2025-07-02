@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using Database;
 using HarmonyLib;
 using KMod;
@@ -10,50 +10,19 @@ using STRINGS;
 using UnityEngine;
 
 
-//
-//
-//
-//              Rework ObjectLayer.GANTRY TILE PLACING CHECK
-//              Rework ObjectLayer.BUILDING TILE PLACING CHECK
-//              
-//              Patch BuildingStatusItem.ShowInUtilityOverlay to display deconstruction statusItem in overlay
-//
-//
-//               Instead of whatever i'm doing. Just prefix sensible function -> recall them after changing layer to building to check collision
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
 namespace TransitTube_Overlay_Mod
 {
     public class Patches
     {
+        public static MethodInfo DebugLogFn = AccessTools.Method(typeof(Debug), nameof(Debug.Log), new Type[] { typeof(object) });
         public class TransiteTubeOverlayMod : UserMod2
         {
+
             public override void OnLoad(Harmony harmony)
             {
+                Util.RegisterAllStrings();
                 base.OnLoad(harmony);
 
-#if false
-                var IsValidBuildLocationMethod = AccessTools.Method(typeof(BuildingDef), "IsValidBuildLocation", new Type[] {
-                    typeof(GameObject),
-                    typeof(int),
-                    typeof(Orientation),
-                    typeof(bool),
-                    typeof(string).MakeByRefType()
-                });
-                harmony.Patch(IsValidBuildLocationMethod, prefix: new HarmonyMethod(typeof(BuildingDef_IsValidBuildLocation_Patch).GetMethod(nameof(BuildingDef_IsValidBuildLocation_Patch.Prefix))));
-#endif
                 var IsAreaClearMethod = AccessTools.Method(typeof(BuildingDef), "IsAreaClear", new Type[]{
                     typeof(GameObject),
                     typeof(int),
@@ -65,12 +34,53 @@ namespace TransitTube_Overlay_Mod
                     typeof(string).MakeByRefType(),
                     typeof(bool)
                 });
-            
+                harmony.Patch(IsAreaClearMethod, postfix: new HarmonyMethod(typeof(BuildingDef_IsAreaClear_Patch).GetMethod(nameof(BuildingDef_IsAreaClear_Patch.Postfix))));
+            }
+
+            public override void OnAllModsLoaded(Harmony harmony, IReadOnlyList<Mod> mods)
+            {
+                base.OnAllModsLoaded(harmony, mods);
+
+                if (Util.isModLoaded(Constants.otherMods.TravelTubesExpanded))
+                {
+                    MethodInfo BunkerCreateFn = AccessTools.Method(
+                        "TravelTubesExpanded.TravelTubeBunkerWallBridgeConfig:CreateBuildingDef",
+                        parameters: Type.EmptyTypes
+                    );
+                    MethodInfo FirePoleCreateFn = AccessTools.Method(
+                        "TravelTubesExpanded.TravelTubeFirePoleBridgeConfig:CreateBuildingDef",
+                        parameters: Type.EmptyTypes
+                    );
+                    MethodInfo InsulatedCreateFn = AccessTools.Method(
+                        "TravelTubesExpanded.TravelTubeInsulatedWallBridgeConfig:CreateBuildingDef",
+                        parameters: Type.EmptyTypes
+                    );
+                    MethodInfo LadderCreateFn = AccessTools.Method(
+                        "TravelTubesExpanded.TravelTubeLadderBridgeConfig:CreateBuildingDef",
+                        parameters: Type.EmptyTypes
+                    );
+
+                    harmony.Patch(BunkerCreateFn, postfix: new HarmonyMethod(typeof(TravelTubeExpanded_CreateBuildingDef_Patch).GetMethod(nameof(TravelTubeExpanded_CreateBuildingDef_Patch.Postfix))));
+                    harmony.Patch(FirePoleCreateFn, postfix: new HarmonyMethod(typeof(TravelTubeExpanded_CreateBuildingDef_Patch).GetMethod(nameof(TravelTubeExpanded_CreateBuildingDef_Patch.Postfix))));
+                    harmony.Patch(InsulatedCreateFn, postfix: new HarmonyMethod(typeof(TravelTubeExpanded_CreateBuildingDef_Patch).GetMethod(nameof(TravelTubeExpanded_CreateBuildingDef_Patch.Postfix))));
+                    harmony.Patch(LadderCreateFn, postfix: new HarmonyMethod(typeof(TravelTubeExpanded_CreateBuildingDef_Patch).GetMethod(nameof(TravelTubeExpanded_CreateBuildingDef_Patch.Postfix))));
+
+                }
             }
         }
 
 
-        public static MethodInfo DebugLogFn = AccessTools.Method(typeof(Debug), nameof(Debug.Log), new Type[] { typeof(object) });
+        public static class TravelTubeExpanded_CreateBuildingDef_Patch
+        {
+            public static void Postfix(ref BuildingDef __result)
+            {
+                if (__result == null) return;
+                __result.ViewMode = TransitTubeOverlay.ID;
+                __result.ObjectLayer = ObjectLayer.TravelTube;
+                __result.BuildLocationRule = Constants.BuildLocationRules.transitTubeBridge;
+            }
+        }
+
 
         [HarmonyPatch(typeof(Db), nameof(Db.Initialize))]
         public static class TransitTubeOverlayMod_AssetsInit
@@ -98,6 +108,8 @@ namespace TransitTube_Overlay_Mod
         [HarmonyPatch(typeof(TravelTubeConfig), nameof(TravelTubeConfig.CreateBuildingDef))]
         public static class TravelTubeConfig_CreateBuildingDef_Patch
         {
+            //Execute after travel tube anywhere to avoid beeing overriden
+            [HarmonyPriority(Priority.Low)]
             public static void Postfix(ref BuildingDef __result)
             {
                 if (__result == null) return;
@@ -437,168 +449,21 @@ namespace TransitTube_Overlay_Mod
             }
         }
 
-        public static class BuildingDef_IsValidBuildLocation_Patch
-        {
-            [HarmonyPrefix]
-            public static bool Prefix(
-                    GameObject source_go,
-                    int cell,
-                    Orientation orientation,
-                    bool replace_tile,
-                    out string fail_reason,
-                    BuildingDef __instance,
-                    ref bool __result
-                )
-            {
-                //If not custom BuildLocationRule, use unpatched method
-                if(
-                    __instance.BuildLocationRule != Constants.BuildLocationRules.transitTube &&
-                    __instance.BuildLocationRule != Constants.BuildLocationRules.transitTubeEntrance &&
-                    __instance.BuildLocationRule != Constants.BuildLocationRules.transitTubeBridge
-                )
-                {
-                    fail_reason = "no_fail_yet";
-                    return true;
-                }
 
-                if (!Grid.IsValidBuildingCell(cell))
-                {
-                    fail_reason = (string)UI.TOOLTIPS.HELP_BUILDLOCATION_INVALID_CELL;
-                    __result = false;
-                    return false;
-                }
-                MethodInfo isAreaValid = AccessTools.Method(typeof(BuildingDef), "isAreaValid");
-                object[] isAreaValidParameter = new object[] { cell, orientation, null };
-                if (!(bool)isAreaValid.Invoke(__instance, isAreaValidParameter))
-                {
-                    fail_reason = (string)isAreaValidParameter[2];
-                    __result = false;
-                    return true;
-                }
-                MethodInfo ArePowerPortsInValidPositions = AccessTools.Method(typeof(BuildingDef), "ArePowerPortsInValidPositions");
-                object[] ArePowerPortsInValidPositionsParameter = new object[] { source_go, cell, orientation, null };
-                if (!(bool)ArePowerPortsInValidPositions.Invoke(__instance, ArePowerPortsInValidPositionsParameter))
-                {
-                    fail_reason = (string)ArePowerPortsInValidPositionsParameter[3];
-                    __result = false;
-                    return true;
-                }
-                MethodInfo AreConduitPortsInValidPositions = AccessTools.Method(typeof(BuildingDef), "AreConduitPortsInValidPositions");
-                object[] AreConduitPortsInValidPositionsParameter = new object[] { source_go, cell, orientation, null };
-                if (!(bool)AreConduitPortsInValidPositions.Invoke(__instance, AreConduitPortsInValidPositionsParameter))
-                {
-                    fail_reason = (string)AreConduitPortsInValidPositionsParameter[3];
-                    __result = false;
-                    return true;
-                }
-                bool flag = true;
-                fail_reason = (string)null;
-
-                //TODO remove unneeded building checks
-                switch (__instance.BuildLocationRule)
-                {
-                    case Constants.BuildLocationRules.transitTube:
-                        GameObject tile = Grid.Objects[cell, (int)ObjectLayer.FoundationTile];
-                        flag = (replace_tile || tile == null || tile == source_go) && !Grid.HasDoor[cell];
-                        if (flag)
-                        {
-                            GameObject building = Grid.Objects[cell, (int)ObjectLayer.Building];
-                            if (building != null)
-                            {
-                                if (__instance.ReplacementLayer == ObjectLayer.NumLayers)
-                                {
-                                    flag = flag && (building == null || building == source_go);
-                                }
-                                else
-                                {
-                                    Building component = building.GetComponent<Building>();
-                                    flag = component == null || component.Def.ReplacementLayer == __instance.ReplacementLayer;
-                                }
-                            }
-                        }
-                        if (flag)
-                        {
-                            GameObject transitTubeObj = Grid.Objects[cell, (int)__instance.ObjectLayer];
-                            if (transitTubeObj != null)
-                            {
-                                if (__instance.ReplacementLayer == ObjectLayer.NumLayers)
-                                {
-                                    flag = flag && (transitTubeObj == null || transitTubeObj == source_go);
-                                }
-                                else
-                                {
-                                    Building component = transitTubeObj.GetComponent<Building>();
-                                    flag = component == null || component.Def.ReplacementLayer == __instance.ReplacementLayer;
-                                }
-                            }
-                        }
-                        fail_reason = UI.TOOLTIPS.HELP_BUILDLOCATION_NOT_IN_TILES;
-                        break;
-
-                    case Constants.BuildLocationRules.transitTubeEntrance:
-                        if (!BuildingDef.CheckFoundation(cell, orientation, __instance.BuildLocationRule, __instance.WidthInCells, __instance.HeightInCells))
-                        {
-                            flag = false;
-                            fail_reason = UI.TOOLTIPS.HELP_BUILDLOCATION_FLOOR;
-                        }
-                        if (flag)
-                        {
-                            GameObject building = Grid.Objects[cell, (int)ObjectLayer.Building];
-                            if (building != null)
-                            {
-                                if (__instance.ReplacementLayer == ObjectLayer.NumLayers)
-                                {
-                                    flag = flag && (building == null || building == source_go);
-                                }
-                                else
-                                {
-                                    Building component = building.GetComponent<Building>();
-                                    flag = component == null || component.Def.ReplacementLayer == __instance.ReplacementLayer;
-                                }
-                            }
-                            fail_reason = UI.TOOLTIPS.HELP_BUILDLOCATION_NOT_IN_TILES;
-                        }
-                        break;
-
-                    case Constants.BuildLocationRules.transitTubeBridge:
-                        GameObject wireTile = Grid.Objects[cell, (int)ObjectLayer.WireTile];
-                        if (wireTile != null)
-                        {
-                            Building building = wireTile.GetComponent<Building>();
-                            if (building != null && building.Def.BuildLocationRule == BuildLocationRule.NotInTiles)
-                            {
-                                flag = false;
-                            }
-                        }
-                        GameObject backWall = Grid.Objects[cell, (int)ObjectLayer.Backwall];
-                        if (backWall != null)
-                        {
-                            Building building = backWall.GetComponent<Building>();
-                            if (building != null && building.Def.BuildLocationRule == BuildLocationRule.NotInTiles)
-                            {
-                                flag = replace_tile;
-                            }
-                        }
-                        break;
-                }
-                __result = flag;
-                return true;
-            }
-        }
-
-
-        //TODO PATCH
+        [HarmonyPatch(typeof(BuildingDef), "IsValidTileLocation")]
         public static class BuildingDef_IsValidTileLocation_Patch
         {
+            [HarmonyPostfix]
             public static void Postfix(
                     GameObject source_go,
                     int cell,
                     bool replacement_tile,
                     ref string fail_reason,
                     BuildingDef __instance,
-                    bool __result
+                    ref bool __result
                 )
             {
+
                 if(__result == false)
                 {
                     return;
@@ -616,7 +481,7 @@ namespace TransitTube_Overlay_Mod
                 )
                 {
                     //TODO MOVE STRING
-                    fail_reason = "Obstructed by " + nameof(buildLocRule);
+                    fail_reason = UI.TOOLTIPS.HELP_BUILDLOCATION_OCCUPIED;
                     __result = false;
                     return;
                 }
@@ -624,10 +489,9 @@ namespace TransitTube_Overlay_Mod
             }
         }
 
-#if false
         public static class BuildingDef_IsAreaClear_Patch
         {
-            public static bool Prefix(
+            public static void Postfix(
                 GameObject source_go,
                 int cell,
                 Orientation orientation,
@@ -635,15 +499,113 @@ namespace TransitTube_Overlay_Mod
                 ObjectLayer tile_layer,
                 bool replace_tile,
                 bool restrictToActiveWorld,
-                out string fail_reason,
+                ref string fail_reason,
                 BuildingDef __instance,
                 ref bool __result
                 )
             {
-                //TODO
+                if (__result == false)
+                    return;
+
+
+                MethodInfo isValidTileLocationFn = AccessTools.Method(typeof(BuildingDef), "IsValidTileLocation");
+                object[] isValidTileLocationFnParameter = null;
+
+                switch (__instance.BuildLocationRule)
+                {
+                    //MY BUILDING
+                    case Constants.BuildLocationRules.transitTube:
+                        if(Grid.Objects[cell, (int)ObjectLayer.Building] != null)
+                        {
+                            fail_reason = UI.TOOLTIPS.HELP_BUILDLOCATION_OCCUPIED;
+                            __result = false;
+                            return;
+                        }
+
+                        GameObject transitTube = Grid.Objects[cell, (int)ObjectLayer.TravelTube];
+                        if(transitTube != null && transitTube != source_go)
+                        {
+                            fail_reason = UI.TOOLTIPS.HELP_BUILDLOCATION_OCCUPIED;
+                            __result = false;
+                            return;
+                        }
+                        if (Grid.Objects[cell, (int)ObjectLayer.Gantry] != null)
+                        {
+                            fail_reason = UI.TOOLTIPS.HELP_BUILDLOCATION_OCCUPIED;
+                            __result = false;
+                            return;
+                        }
+                        break;
+
+                    case Constants.BuildLocationRules.transitTubeBridge:
+
+                        isValidTileLocationFnParameter = new object[] { source_go, cell, false, null };
+                        if(!(bool)isValidTileLocationFn.Invoke(__instance, isValidTileLocationFnParameter))
+                        {
+                            fail_reason = (string)isValidTileLocationFnParameter[3];
+                            __result = false;
+                            return;
+                        }
+                        if (Grid.Objects[cell, (int)ObjectLayer.Building] != null)
+                        {
+                            fail_reason = UI.TOOLTIPS.HELP_BUILDLOCATION_OCCUPIED;
+                            __result = false;
+                            return;
+                        }
+                        if (Grid.Objects[cell, (int)ObjectLayer.Gantry] != null)
+                        {
+                            fail_reason = UI.TOOLTIPS.HELP_BUILDLOCATION_OCCUPIED;
+                            __result = false;
+                            return;
+                        }
+                        break;
+
+
+                    case Constants.BuildLocationRules.transitTubeEntrance:
+                        for(int index = 0; index < __instance.PlacementOffsets.Length; index++)
+                        {
+                            CellOffset rotatedCellOffset = Rotatable.GetRotatedCellOffset(__instance.PlacementOffsets[index], orientation);
+                            int cell1 = Grid.OffsetCell(cell, rotatedCellOffset);
+                            isValidTileLocationFnParameter = new object[] { source_go, cell, true, null };
+                            if (!(bool)isValidTileLocationFn.Invoke(__instance, isValidTileLocationFnParameter))
+                            {
+                                fail_reason = (string)isValidTileLocationFnParameter[3];
+                                __result = false;
+                                return;
+                            }
+                            if (Grid.Objects[cell1, (int)ObjectLayer.Building] != null)
+                            {
+                                fail_reason = UI.TOOLTIPS.HELP_BUILDLOCATION_OCCUPIED;
+                                __result = false;
+                                return;
+                            }
+                            if (Grid.Objects[cell, (int)ObjectLayer.Gantry] != null)
+                            {
+                                fail_reason = UI.TOOLTIPS.HELP_BUILDLOCATION_OCCUPIED;
+                                __result = false;
+                                return;
+                            }
+                        }
+                        break;
+                    default:
+                        if(layer == ObjectLayer.Building)
+                        {
+                            for (int index = 0; index < __instance.PlacementOffsets.Length; index++)
+                            {
+                                CellOffset rotatedCellOffset = Rotatable.GetRotatedCellOffset(__instance.PlacementOffsets[index], orientation);
+                                int cell1 = Grid.OffsetCell(cell, rotatedCellOffset);
+                                if (Grid.Objects[cell1, (int)ObjectLayer.TravelTube] != null)
+                                {
+                                    fail_reason = UI.TOOLTIPS.HELP_BUILDLOCATION_OCCUPIED;
+                                    __result = false;
+                                    return;
+                                }
+                            }
+                        }
+                        break;
+                }
 
             }
         }
-#endif
     }
 }
