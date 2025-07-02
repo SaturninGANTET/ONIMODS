@@ -6,9 +6,9 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using static UnityEngine.ImageConversion;
 
-namespace TransitTube_Overlay_Mod
+namespace TransitTubeOverlay
 {
-    internal class Util
+    internal class Utils
     {
         public static void RegisterEmbeddedIcon(string resourceName, string iconKey)
         {
@@ -17,7 +17,7 @@ namespace TransitTube_Overlay_Mod
             Assembly assembly = Assembly.GetExecutingAssembly();
             if (assembly == null)
             {
-                Debug.LogError("[TransitTube_Overlay_Mod] Assembly is null.");
+                Debug.LogError("[TransitTubeOverlay] Assembly is null.");
                 return;
             }
 
@@ -26,7 +26,7 @@ namespace TransitTube_Overlay_Mod
             {
                 if (stream == null)
                 {
-                    Debug.LogError($"[TransitTube_Overlay_Mod] Resource not found: {resourceName}");
+                    Debug.LogError($"[TransitTubeOverlay] Resource not found: {resourceName}");
                     return;
                 }
 
@@ -37,7 +37,7 @@ namespace TransitTube_Overlay_Mod
                     byte[] data = ms.ToArray();
                     if (data == null || data.Length == 0)
                     {
-                        Debug.LogError("[TransitTube_Overlay_Mod] Image data is null or empty.");
+                        Debug.LogError("[TransitTubeOverlay] Image data is null or empty.");
                         return;
                     }
 
@@ -45,7 +45,7 @@ namespace TransitTube_Overlay_Mod
                     bool loaded = tex.LoadImage(data);
                     if (!loaded)
                     {
-                        Debug.LogError("[TransitTube_Overlay_Mod] Failed to load image from data.");
+                        Debug.LogError("[TransitTubeOverlay] Failed to load image from data.");
                         return;
                     }
 
@@ -57,7 +57,7 @@ namespace TransitTube_Overlay_Mod
                     );
 
                     Assets.Sprites.Add(iconKey, sprite);
-                    Debug.Log($"[TransitTube_Overlay_Mod] Custom sprite registered as '{iconKey}'.");
+                    Debug.Log($"[TransitTubeOverlay] Custom sprite registered as '{iconKey}'.");
                 }
             }
         }

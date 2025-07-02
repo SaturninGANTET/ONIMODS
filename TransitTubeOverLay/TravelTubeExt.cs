@@ -1,4 +1,4 @@
-﻿namespace TransitTube_Overlay_Mod
+﻿namespace TransitTubeOverlay
 {
     using HarmonyLib;
     using System.Runtime.CompilerServices;
@@ -21,13 +21,6 @@
         {
             var d = data.GetOrCreateValue(tube);
             d.isValidExitOnly = value;
-            if(value)
-            {
-                ((KSelectable)AccessTools.Field(typeof(TravelTube), "selectable").GetValue(tube)).AddStatusItem(CustomStatusItem.transitTubeTrueExit);
-            } else
-            {
-                ((KSelectable)AccessTools.Field(typeof(TravelTube), "selectable").GetValue(tube)).RemoveStatusItem(CustomStatusItem.transitTubeTrueExit);
-            }
         }
     }
 }

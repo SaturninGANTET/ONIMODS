@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TransitTube_Overlay_Mod
+namespace TransitTubeOverlay
 {
     public static class STRINGS
     {

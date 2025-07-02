@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace TransitTube_Overlay_Mod
+namespace TransitTubeOverlay
 {
     public class TubeOverlayIcon : KMonoBehaviour
     {
@@ -10,12 +10,12 @@ namespace TransitTube_Overlay_Mod
 
         public void SetupInput()
         {
-            Setup(Constants.AssetsName.TransitTubeInput);
+            Setup(CONSTANTS.ASSETSNAME.TransitTubeInput);
         }
 
         public void SetupOutput()
         {
-            Setup(Constants.AssetsName.TransitTubeOutput);
+            Setup(CONSTANTS.ASSETSNAME.TransitTubeOutput);
         }
         private void Setup(String spriteName)
         {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace TransitTube_Overlay_Mod
+namespace TransitTubeOverlay
 {
     public class TransitTubeOverlay : OverlayModes.Mode
     {
@@ -13,15 +13,6 @@ namespace TransitTube_Overlay_Mod
                 if(_targetIDs == null)
                 {
                     _targetIDs = new List<Tag>() { "TravelTube", "TravelTubeEntrance", "TravelTubeWallBridge" };
-
-                    if (Util.isModLoaded(Constants.otherMods.TravelTubesExpanded))
-                    {
-                        // Travel Tubes Expanded Mod Installed - https://github.com/SanchozzDeponianin/ONIMods/tree/master/src/TravelTubesExpanded
-                        _targetIDs.Add(new Tag("TravelTubeBunkerWallBridge"));
-                        _targetIDs.Add(new Tag("TravelTubeFirePoleBridge"));
-                        _targetIDs.Add(new Tag("TravelTubeInsulatedWallBridge"));
-                        _targetIDs.Add(new Tag("TravelTubeLadderBridge"));
-                    }
                 }
                 return _targetIDs;
             }
