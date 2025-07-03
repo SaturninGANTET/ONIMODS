@@ -65,7 +65,7 @@ namespace TransitTubeOverlay
             }
         }
 
-        public static bool isModLoaded(string modName)
+        public static bool IsModLoaded(string modName)
         {
             return AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == modName);
         }

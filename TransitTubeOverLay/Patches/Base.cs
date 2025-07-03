@@ -22,7 +22,7 @@ namespace TransitTubeOverlay.Patches
         public override void OnAllModsLoaded(Harmony harmony, IReadOnlyList<Mod> mods)
         {
             base.OnAllModsLoaded(harmony, mods);
-            if (Utils.isModLoaded("TravelTubesExpanded"))
+            if (Utils.IsModLoaded("TravelTubesExpanded"))
             {
                 TravelTubesExpanded.Patch(harmony);
             }
