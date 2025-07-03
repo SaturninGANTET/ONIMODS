@@ -12,4 +12,4 @@ msgstr "运载管道概览"
 
 msgctxt "TransitTubeOverlay.STRINGS.UI.OVERLAYS.TRANSITTUBE.TOOLTIP"
 msgid "Displays transit tubes system components"
-msgstr "展示运载管道要素"
+msgstr "显示运载管道要素"
