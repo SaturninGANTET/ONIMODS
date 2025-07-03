@@ -1,5 +1,4 @@
-﻿using KMod;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -63,33 +62,6 @@ namespace TransitTubeOverlay
                     Assets.Sprites.Add(iconKey, sprite);
                     Debug.Log($"[TransitTubeOverlay] Custom sprite registered as '{iconKey}'.");
                 }
-            }
-        }
-
-        /**
-         * TODO DELETE
-         */
-        public static void RegisterAllStrings()
-        {
-            RegisterStrings(typeof(STRINGS), "STRINGS");
-        }
-
-        private static void RegisterStrings(Type type, string path)
-        {
-            foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.Static))
-            {
-                if (field.FieldType == typeof(String))
-                {
-                    string key = $"{path}.{field.Name}";
-                    RuntimeHelpers.RunClassConstructor(field.DeclaringType.TypeHandle);
-                    string value = field.GetValue(null)?.ToString();
-                    Strings.Add(key, value);
-                }
-            }
-
-            foreach (var nestedType in type.GetNestedTypes(BindingFlags.Public))
-            {
-                RegisterStrings(nestedType, $"{path}.{nestedType.Name}");
             }
         }
 
