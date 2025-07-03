@@ -106,7 +106,7 @@ namespace TransitTubeOverlay.Patches
 
                 if (registerModeMethod == null)
                 {
-                    Debug.LogError("[TransitTubeOverlay] Failed to find RegisterMode method."); 
+                    Debug.LogError("[TransitTubeOverlay] Failed to find RegisterMode method.");
                     return;
                 }
 
