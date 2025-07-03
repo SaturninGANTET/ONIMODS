@@ -2,19 +2,28 @@
 
 namespace TransitTubeOverlay
 {
-    public static class STRINGS
+    public class STRINGS
     {
-        public static class UI
+        public class UI
         {
-            public static class TOOLS
+            public class TOOLS
             {
-                public static class FILTERLAYERS
+                public class FILTERLAYERS
                 {
-                    public static class TRAVELTUBES
+                    public class TRAVELTUBES
                     {
-                        public static String NAME = "Transit Tubes";
-                        public static String TOOLTIP = "Transit tubes components only";
+                        public static LocString NAME = "Transit Tubes";
+                        public static LocString TOOLTIP = "Transit tubes components only";
                     }
+                }
+            }
+
+            public class OVERLAYS
+            {
+                public class TRANSITTUBE
+                {
+                    public static LocString NAME = "Transit Tube Overlay";
+                    public static LocString TOOLTIP = "Displays transit tubes system components";
                 }
             }
         }

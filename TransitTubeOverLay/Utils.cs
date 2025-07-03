@@ -10,6 +10,9 @@ namespace TransitTubeOverlay
 {
     internal class Utils
     {
+        public static string MyModName => Assembly.GetExecutingAssembly().GetName().Name;
+        public static string MyModPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
         public static void RegisterEmbeddedIcon(string resourceName, string iconKey)
         {
             if (Assets.Sprites.ContainsKey(iconKey)) { return; }
@@ -62,33 +65,35 @@ namespace TransitTubeOverlay
             }
         }
 
-        public static void RegisterAllStrings()
-        {
-            RegisterStrings(typeof(STRINGS), "STRINGS");
-        }
-
-        private static void RegisterStrings(Type type, string path)
-        {
-            foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.Static))
-            {
-                if (field.FieldType == typeof(String))
-                {
-                    string key = $"{path}.{field.Name}";
-                    RuntimeHelpers.RunClassConstructor(field.DeclaringType.TypeHandle);
-                    string value = field.GetValue(null)?.ToString();
-                    Strings.Add(key, value);
-                }
-            }
-
-            foreach (var nestedType in type.GetNestedTypes(BindingFlags.Public))
-            {
-                RegisterStrings(nestedType, $"{path}.{nestedType.Name}");
-            }
-        }
-
-        public static bool isModLoaded(string modName)
+        public static bool IsModLoaded(string modName)
         {
             return AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == modName);
         }
+
+        public static void InitLocalization(Type stringsType)
+        {
+
+            Localization.RegisterForTranslation(stringsType);
+            var locale_code = Localization.GetLocale()?.Code;
+            if (string.IsNullOrEmpty(locale_code))
+                locale_code = Localization.GetCurrentLanguageCode();
+            if (!string.IsNullOrEmpty(locale_code))
+            {
+                locale_code = locale_code.Split('_')[0];
+                try
+                {
+                    string lang_file = Path.Combine(MyModPath, "translations", locale_code + ".po");
+                    if (File.Exists(lang_file))
+                    {
+                        Localization.OverloadStrings(Localization.LoadStringsFile(lang_file, false));
+                    }
+                }
+                catch
+                {
+                    Debug.LogWarningFormat("[TransitTubeOverlay] Failed to load localization.");
+                }
+            }
+        }
+
     }
 }

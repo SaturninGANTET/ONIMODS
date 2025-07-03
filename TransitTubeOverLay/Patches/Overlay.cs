@@ -73,16 +73,15 @@ namespace TransitTubeOverlay.Patches
                     typeof(string)           // tooltip_header
                 });
 
-
                 object newToggle = ctor.Invoke(new object[]
                 {
-                    "Transit Tube Overlay",                         // text
-                    CONSTANTS.ASSETSNAME.TransitTubeOverlayToggle,  // icon_name
-                    TransitTubeOverlay.ID,                          // sim_view
-                    "TravelTube",                                   // required_tech_item
-                    Action.NumActions,                              // hotKey
-                    "Displays transit tube components",             // tooltip
-                    "Transit Tube Overlay"                          // tooltip_header
+                    Strings.Get("STRINGS.UI.OVERLAYS.TRANSITTUBE.NAME").ToString(),     // text -- unused as far as i know
+                    CONSTANTS.ASSETSNAME.TransitTubeOverlayToggle,                      // icon_name
+                    TransitTubeOverlay.ID,                                              // sim_view
+                    "TravelTube",                                                       // required_tech_item
+                    Action.NumActions,                                                  // hotKey
+                    Strings.Get("STRINGS.UI.OVERLAYS.TRANSITTUBE.TOOLTIP").ToString(),  // tooltip
+                    Strings.Get("STRINGS.UI.OVERLAYS.TRANSITTUBE.NAME").ToString(),     // tooltip_header
                 });
 
                 if (newToggle is KIconToggleMenu.ToggleInfo toggleInfo)

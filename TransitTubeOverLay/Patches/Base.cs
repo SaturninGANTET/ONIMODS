@@ -12,7 +12,9 @@ namespace TransitTubeOverlay.Patches
 
         public override void OnLoad(Harmony harmony)
         {
-            Utils.RegisterAllStrings();
+            Utils.InitLocalization(typeof(STRINGS));
+            LocString.CreateLocStringKeys(typeof(STRINGS), null);
+
             base.OnLoad(harmony);
             BuildingConfig_CreateBuildingDef_Patch.PatchAll(harmony);
         }
@@ -20,7 +22,7 @@ namespace TransitTubeOverlay.Patches
         public override void OnAllModsLoaded(Harmony harmony, IReadOnlyList<Mod> mods)
         {
             base.OnAllModsLoaded(harmony, mods);
-            if (Utils.isModLoaded("TravelTubesExpanded"))
+            if (Utils.IsModLoaded("TravelTubesExpanded"))
             {
                 TravelTubesExpanded.Patch(harmony);
             }
