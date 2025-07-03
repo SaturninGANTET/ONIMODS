@@ -1,0 +1,16 @@
+﻿msgctxt "TransitTubeOverlay.STRINGS.UI.TOOLS.FILTERLAYERS.TRAVELTUBES.NAME"
+msgid "Transit Tubes"
+msgstr "Transit Tubes"
+
+msgctxt "TransitTubeOverlay.STRINGS.UI.TOOLS.FILTERLAYERS.TRAVELTUBES.TOOLTIP"
+msgid "Transit tubes components only"
+msgstr "Transit tubes components only"
+
+
+msgctxt "TransitTubeOverlay.STRINGS.UI.OVERLAYS.TRANSITTUBE.NAME"
+msgid "Transit Tube Overlay"
+msgstr "Transit Tube Overlay"
+
+msgctxt "TransitTubeOverlay.STRINGS.UI.OVERLAYS.TRANSITTUBE.TOOLTIP"
+msgid "Displays transit tubes system components"
+msgstr "Displays transit tubes system components"

@@ -40,5 +40,11 @@
     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </None>
   </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="translations\*.po">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>

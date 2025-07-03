@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
 using KMod;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using TransitTubeOverlay.Integration;
 using static TransitTubeOverlay.Patches.OverlayPatches;
 
@@ -12,7 +14,9 @@ namespace TransitTubeOverlay.Patches
 
         public override void OnLoad(Harmony harmony)
         {
-            Utils.RegisterAllStrings();
+            Utils.InitLocalization(typeof(STRINGS));
+            LocString.CreateLocStringKeys(typeof(STRINGS), null);
+
             base.OnLoad(harmony);
             BuildingConfig_CreateBuildingDef_Patch.PatchAll(harmony);
         }

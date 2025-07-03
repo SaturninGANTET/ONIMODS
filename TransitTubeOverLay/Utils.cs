@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KMod;
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,6 +11,9 @@ namespace TransitTubeOverlay
 {
     internal class Utils
     {
+        public static string MyModName => Assembly.GetExecutingAssembly().GetName().Name;
+        public static string MyModPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
         public static void RegisterEmbeddedIcon(string resourceName, string iconKey)
         {
             if (Assets.Sprites.ContainsKey(iconKey)) { return; }
@@ -62,6 +66,9 @@ namespace TransitTubeOverlay
             }
         }
 
+        /**
+         * TODO DELETE
+         */
         public static void RegisterAllStrings()
         {
             RegisterStrings(typeof(STRINGS), "STRINGS");
@@ -90,5 +97,31 @@ namespace TransitTubeOverlay
         {
             return AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == modName);
         }
+
+        public static void InitLocalization(Type stringsType)
+        {
+
+            Localization.RegisterForTranslation(stringsType);
+            var locale_code = Localization.GetLocale()?.Code;
+            if (string.IsNullOrEmpty(locale_code))
+                locale_code = Localization.GetCurrentLanguageCode();
+            if (!string.IsNullOrEmpty(locale_code))
+            {
+                locale_code = locale_code.Split('_')[0];
+                try
+                {
+                    string lang_file = Path.Combine(MyModPath, "translations", locale_code + ".po");
+                    if (File.Exists(lang_file))
+                    {
+                        Localization.OverloadStrings(Localization.LoadStringsFile(lang_file, false));
+                    }
+                }
+                catch
+                {
+                    Debug.LogWarningFormat("[TransitTubeOverlay] Failed to load localization.");
+                }
+            }
+        }
+
     }
 }
