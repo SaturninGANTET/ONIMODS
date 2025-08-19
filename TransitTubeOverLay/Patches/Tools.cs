@@ -100,5 +100,19 @@ namespace TransitTubeOverlay.Patches
             return true;
         }
     }
-    
+
+    [HarmonyPatch(typeof(DisconnectTool))]
+    public static class DisconnectTool_Patch
+    {
+        /**
+        * Adds Transit Tube filter toggle
+        */
+        [HarmonyPatch("GetDefaultFilters")]
+        [HarmonyPostfix]
+        public static void AddTravelTubeFilterLayerToggle(
+            Dictionary<string, ToolParameterMenu.ToggleState> filters)
+        {
+            filters.Add(CONSTANTS.FILTERLAYERS.TRAVELTUBE, ToolParameterMenu.ToggleState.Off);
+        }
+    }
 }
