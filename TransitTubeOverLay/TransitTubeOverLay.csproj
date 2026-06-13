@@ -1,23 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <OutputType>Library</OutputType>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableImplicitFrameworkReferences>false</EnableImplicitFrameworkReferences>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <LangVersion>latest</LangVersion>
-    <GameFolder>E:\SteamLibrary\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed</GameFolder>
-	<DebugType>none</DebugType>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GameFolder>S:\SteamLibrary\steamapps\common\OxygenNotIncluded\OxygenNotIncluded_Data\Managed</GameFolder>
+    <DebugType>none</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Assembly-CSharp" HintPath="$(GameFolder)/Assembly-CSharp.dll" Private="false" />
-    <Reference Include="UnityEngine" HintPath="$(GameFolder)/UnityEngine.dll" Private="false" />
-    <Reference Include="Assembly-CSharp-firstpass" HintPath="$(GameFolder)/Assembly-CSharp-firstpass.dll" Private="false" />
-    <Reference Include="UnityEngine.CoreModule" HintPath="$(GameFolder)/UnityEngine.CoreModule.dll" Private="false" />
-    <Reference Include="UnityEngine.UI" HintPath="$(GameFolder)/UnityEngine.UI.dll" Private="false" />
-    <Reference Include="UnityEngine.ImageConversionModule" HintPath="$(GameFolder)/UnityEngine.ImageConversionModule.dll" Private="false" />
-    <Reference Include="0Harmony" HintPath="$(GameFolder)/0Harmony.dll" Private="false" />
+    <Reference Include="mscorlib"    						HintPath="$(GameFolder)/mscorlib.dll"    						Private="false" />
+    <Reference Include="netstandard" 						HintPath="$(GameFolder)/netstandard.dll" 						Private="false" />
+    <Reference Include="System"      						HintPath="$(GameFolder)/System.dll"      						Private="false" />
+    <Reference Include="System.Core" 						HintPath="$(GameFolder)/System.Core.dll" 						Private="false" />
+
+    <Reference Include="Assembly-CSharp"           			HintPath="$(GameFolder)/Assembly-CSharp.dll"           			Private="false" />
+    <Reference Include="Assembly-CSharp-firstpass" 			HintPath="$(GameFolder)/Assembly-CSharp-firstpass.dll" 			Private="false" />
+    <Reference Include="UnityEngine"               			HintPath="$(GameFolder)/UnityEngine.dll"               			Private="false" />
+    <Reference Include="UnityEngine.CoreModule"    			HintPath="$(GameFolder)/UnityEngine.CoreModule.dll"    			Private="false" />
+    <Reference Include="UnityEngine.UI"            			HintPath="$(GameFolder)/UnityEngine.UI.dll"            			Private="false" />
+    <Reference Include="UnityEngine.ImageConversionModule"  HintPath="$(GameFolder)/UnityEngine.ImageConversionModule.dll" 	Private="false" />
+    <Reference Include="0Harmony"                  			HintPath="$(GameFolder)/0Harmony.dll"                  			Private="false" />
   </ItemGroup>
   
   <ItemGroup>

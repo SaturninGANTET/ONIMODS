@@ -51,7 +51,7 @@ namespace TransitTubeOverlay
             SelectTool.Instance.ClearLayerMask();
 
             UnregisterSaveLoadListeners();
-            foreach (var icon in GameObject.FindObjectsOfType<TubeOverlayIcon>())
+            foreach (var icon in GameObject.FindObjectsByType<TubeOverlayIcon>(FindObjectsSortMode.None))
             {
                 icon.SetVisible(false);
             }

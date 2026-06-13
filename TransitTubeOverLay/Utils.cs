@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using UnityEngine;
-using static UnityEngine.ImageConversion;
 
 namespace TransitTubeOverlay
 {
@@ -45,7 +44,7 @@ namespace TransitTubeOverlay
                     }
 
                     Texture2D tex = new Texture2D(256, 256);
-                    bool loaded = tex.LoadImage(data);
+                    bool loaded = UnityEngine.ImageConversion.LoadImage(tex, data);
                     if (!loaded)
                     {
                         Debug.LogError("[TransitTubeOverlay] Failed to load image from data.");

@@ -17,11 +17,24 @@ namespace TransitTubeOverlay.Patches
         [HarmonyPatch("GetDefaultFilters")]
         [HarmonyPostfix]
         public static void AddTravelTubeFilterLayerToggle(
-            Dictionary<string, ToolParameterMenu.ToggleState> filters)
+            ref ToolParameterMenu.ToggleData[] filters)
         {
-            filters.Add(CONSTANTS.FILTERLAYERS.TRAVELTUBE, ToolParameterMenu.ToggleState.Off);
+            if (filters == null) return;
+
+            var newFilters = new ToolParameterMenu.ToggleData[filters.Length + 1];
+
+            for (int i = 0; i < filters.Length; i++)
+            {
+                newFilters[i] = filters[i];
+            }
+
+            newFilters[filters.Length] = new ToolParameterMenu.ToggleData(
+                CONSTANTS.FILTERLAYERS.TRAVELTUBE,
+                ToolParameterMenu.ToggleState.Off
+            );
+            filters = newFilters;
         }
-        
+
 
 
         [HarmonyPatch("OnOverlayChanged")]
@@ -67,7 +80,7 @@ namespace TransitTubeOverlay.Patches
             }
             return result;
         }
-        
+
 
         /*
          * We are checking Ids instead of ObjectLayers because transit tubes reside in ObjectLayer.Building layer
@@ -110,9 +123,22 @@ namespace TransitTubeOverlay.Patches
         [HarmonyPatch("GetDefaultFilters")]
         [HarmonyPostfix]
         public static void AddTravelTubeFilterLayerToggle(
-            Dictionary<string, ToolParameterMenu.ToggleState> filters)
+            ref ToolParameterMenu.ToggleData[] filters)
         {
-            filters.Add(CONSTANTS.FILTERLAYERS.TRAVELTUBE, ToolParameterMenu.ToggleState.Off);
+            if (filters == null) return;
+
+            var newFilters = new ToolParameterMenu.ToggleData[filters.Length + 1];
+
+            for (int i = 0; i < filters.Length; i++)
+            {
+                newFilters[i] = filters[i];
+            }
+
+            newFilters[filters.Length] = new ToolParameterMenu.ToggleData(
+                CONSTANTS.FILTERLAYERS.TRAVELTUBE,
+                ToolParameterMenu.ToggleState.Off
+            );
+            filters = newFilters;
         }
     }
 }
